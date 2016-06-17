@@ -22,7 +22,6 @@ var lineGapHeight = 20;
 
 function drawStaff(x, y, length) {
     for (var i = 0; i < 5; i++) {
-        console.log("X: %s, Y: %s, length: %s", x,y,length);
         line(x, y, x + length, y);
         y += lineGapHeight;
     }
