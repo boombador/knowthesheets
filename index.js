@@ -14,26 +14,19 @@ function init() {
 
     staff = new Staff(25, 150, 750, 20, 50);
 
-    staff.addNote(2, 0, 1);
-    staff.addNote(2, 1, 1);
-    staff.addNote(2, 2, 1);
-    staff.addNote(2, 3, 1);
-    staff.addNote(2, 4, 1);
-    staff.addNote(2, 5, 1);
-    staff.addNote(2, 6, 1);
-    staff.addNote(2, 7, 1);
-
-    staff.addNote(1, 0, 1);
-    staff.addNote(1, 1, 1);
-    staff.addNote(1, 2, 1);
-    staff.addNote(1, 3, 1);
-    staff.addNote(1, 4, 1);
-    staff.addNote(1, 5, 1);
-    staff.addNote(1, 6, 1);
-    staff.addNote(2, 0, 1);
+    staff.addOctaveScale(2);
+    staff.addOctaveScale(1);
 
     document.body.onkeydown = handleKeypress;
+
+    document.getElementById('newExercise').addEventListener('click', randomExercise);
+
     loop();
+}
+
+function randomExercise() {
+    staff.clear();
+    staff.randomQuarterNotes(16);
 }
 
 function handleKeypress(evt) {
@@ -179,6 +172,34 @@ Staff.prototype.processNote = function(pressedKey) {
         // error tone if a letter key?
     }
 };
+
+Staff.prototype.clear = function() {
+    this.notes = [];
+    this.currentX = this.x;
+};
+
+Staff.prototype.addOctaveScale = function(octave) {
+    this.addNote(octave, 0, 1);
+    this.addNote(octave, 1, 1);
+    this.addNote(octave, 2, 1);
+    this.addNote(octave, 3, 1);
+    this.addNote(octave, 4, 1);
+    this.addNote(octave, 5, 1);
+    this.addNote(octave, 6, 1);
+    this.addNote(octave, 7, 1);
+};
+
+Staff.prototype.randomQuarterNotes = function(noteCount) {
+    for (var i = 0; i < noteCount; i++) {
+        var octave = getRandomInt(1, 3);
+        var note = getRandomInt(0, 7);
+        this.addNote(octave, note, 1);
+    }
+};
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 init();
 
