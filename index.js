@@ -21,6 +21,9 @@ function init() {
     staff.addNote(0, 4, 1); // G
     staff.addNote(0, 5, 1); // A
     staff.addNote(0, 6, 1); // B
+    staff.addNote(0, 7, 1); // C
+    staff.addNote(1, 0, 1); // C
+    staff.addNote(1, 1, 1); // D
 
     staff.addNote(-1, 7, 1);
     staff.addNote(-1, 6, 1);
@@ -30,17 +33,8 @@ function init() {
     staff.addNote(-1, 2, 1);
     staff.addNote(-1, 1, 1);
 
-    staff.processNote();
-    staff.processNote();
-
     loop();
 }
-
-//document.body.onkeyup = function(e){
-    //if(e.keyCode == 32){
-        ////your code
-    //}
-//}
 
 function loop() {
     requestAnimationFrame(loop);
@@ -136,20 +130,41 @@ Staff.prototype.render = function() {
     });
 };
 
+var noteDefs = [
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'A',
+    'B'
+];
+
 // numerical indices, octave 0 note 0 is middle c, note 0 is always c, note 1 is d and so on
 Staff.prototype.addNote = function(octave, note, duration) {
     var offset = (octave * 7 * this.stepHeight) + note * this.stepHeight;
+
+    var noteOffset = (octave * 7 + note) % 7;
     this.notes.push({
         x: this.currentX,
         y: this.y - offset,
-        duration: duration
+        duration: duration,
+        letter: noteDefs[noteOffset]
     });
 
     this.currentX += this.beatDist * duration;
 };
 
 Staff.prototype.processNote = function() {
+    var note = this.notes[this.activeNote];
+    console.log(note);
+
     this.activeNote++;
 };
 
 init();
+
+document.body.onkeydown = function(e){
+    staff.processNote(e.which);
+}
+
