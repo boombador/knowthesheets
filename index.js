@@ -174,6 +174,7 @@ Staff.prototype.processNote = function(pressedKey) {
 };
 
 Staff.prototype.clear = function() {
+    this.activeNote = 0;
     this.notes = [];
     this.currentX = this.x;
 };
