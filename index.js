@@ -155,11 +155,15 @@ Staff.prototype.addNote = function(octave, note, duration) {
     this.currentX += this.beatDist * duration;
 };
 
-Staff.prototype.processNote = function() {
+Staff.prototype.processNote = function(charCode) {
     var note = this.notes[this.activeNote];
-    console.log(note);
+    var pressedKey = String.fromCharCode(charCode);
 
-    this.activeNote++;
+    if (note.letter == pressedKey) {
+        this.activeNote++;
+        
+        // TODO: play note
+    }
 };
 
 init();
