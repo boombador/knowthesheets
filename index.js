@@ -27,6 +27,34 @@ function drawStaff(x, y, length) {
     }
 }
 
+// scaled so that duration 1 -> quarter note, 2 -> half note, etc.
+function drawNote(x, y, duration) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(1.3, 1);
+
+    ctx.beginPath();
+    ctx.arc(0, 0, 6, 0, Math.PI*2); 
+    ctx.closePath();
+
+    if (duration == 1) {
+        ctx.fill();
+        ctx.moveTo(6, 0);
+        ctx.lineTo(6, -30);
+        ctx.stroke();
+    } else if (duration == 2) {
+        ctx.stroke();
+        ctx.moveTo(6, 0);
+        ctx.lineTo(6, -30);
+        ctx.stroke();
+    } else if (duration == 4) {
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
 init();
 drawStaff(25, 25, 750);
 drawStaff(25, 150, 750);
+drawNote(25, 25, 4);
