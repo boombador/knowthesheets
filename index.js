@@ -14,24 +14,23 @@ function init() {
 
     staff = new Staff(25, 150, 750, 20, 50);
 
-    staff.addNote(0, 0, 1); // C
-    staff.addNote(0, 1, 1); // D
-    staff.addNote(0, 2, 1); // E
-    staff.addNote(0, 3, 1); // F
-    staff.addNote(0, 4, 1); // G
-    staff.addNote(0, 5, 1); // A
-    staff.addNote(0, 6, 1); // B
-    staff.addNote(0, 7, 1); // C
-    staff.addNote(1, 0, 1); // C
-    staff.addNote(1, 1, 1); // D
+    staff.addNote(2, 0, 1);
+    staff.addNote(2, 1, 1);
+    staff.addNote(2, 2, 1);
+    staff.addNote(2, 3, 1);
+    staff.addNote(2, 4, 1);
+    staff.addNote(2, 5, 1);
+    staff.addNote(2, 6, 1);
+    staff.addNote(2, 7, 1);
 
-    staff.addNote(-1, 7, 1);
-    staff.addNote(-1, 6, 1);
-    staff.addNote(-1, 5, 1);
-    staff.addNote(-1, 4, 1);
-    staff.addNote(-1, 3, 1);
-    staff.addNote(-1, 2, 1);
-    staff.addNote(-1, 1, 1);
+    staff.addNote(1, 0, 1);
+    staff.addNote(1, 1, 1);
+    staff.addNote(1, 2, 1);
+    staff.addNote(1, 3, 1);
+    staff.addNote(1, 4, 1);
+    staff.addNote(1, 5, 1);
+    staff.addNote(1, 6, 1);
+    staff.addNote(2, 0, 1);
 
     document.body.onkeydown = handleKeypress;
     loop();
@@ -155,12 +154,13 @@ var noteDefs = [
 
 // numerical indices, octave 0 note 0 is middle c, note 0 is always c, note 1 is d and so on
 Staff.prototype.addNote = function(octave, note, duration) {
-    var offset = (octave * 7 * this.stepHeight) + note * this.stepHeight;
+    var offsetHeight = (octave * 7 * this.stepHeight) + (note * this.stepHeight);
+    var bottom = this.y + 14*this.stepHeight;
 
     var noteOffset = (octave * 7 + note) % 7;
     this.notes.push({
         x: this.currentX,
-        y: this.y - offset,
+        y: bottom - offsetHeight,
         duration: duration,
         letter: noteDefs[noteOffset]
     });
