@@ -2,3 +2,16 @@
 #mainCanvas {
     border: 1px solid #999;
 }
+
+#feedback {
+    font-size: 48px;
+}
+
+#userPress {
+    font-weight: 700;
+}
+
+.container {
+    width: 860px;
+    margin: 50px auto;
+}

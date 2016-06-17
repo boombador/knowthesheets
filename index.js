@@ -33,7 +33,20 @@ function init() {
     staff.addNote(-1, 2, 1);
     staff.addNote(-1, 1, 1);
 
+    document.body.onkeydown = handleKeypress;
     loop();
+}
+
+function handleKeypress(evt) {
+    var pressResult = document.getElementById('userPress');
+    var pressedKey = String.fromCharCode(evt.which);
+
+    if (evt.which < 65 || evt.which > 65+6) {
+        return;
+    }
+
+    pressResult.innerHTML = pressedKey;
+    staff.processNote(pressedKey);
 }
 
 function loop() {
@@ -155,20 +168,17 @@ Staff.prototype.addNote = function(octave, note, duration) {
     this.currentX += this.beatDist * duration;
 };
 
-Staff.prototype.processNote = function(charCode) {
+Staff.prototype.processNote = function(pressedKey) {
     var note = this.notes[this.activeNote];
-    var pressedKey = String.fromCharCode(charCode);
 
     if (note.letter == pressedKey) {
         this.activeNote++;
         
         // TODO: play note
+    } else {
+        // error tone if a letter key?
     }
 };
 
 init();
-
-document.body.onkeydown = function(e){
-    staff.processNote(e.which);
-}
 
