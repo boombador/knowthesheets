@@ -1,0 +1,11 @@
+{
+  "name": "knowthesheets",
+  "version": "0.0.1",
+  "description": "a library that helps create interactive exercises for learning to read sheet music",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian McLaughlin",
+  "license": "MIT"
+}
