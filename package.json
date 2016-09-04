@@ -1,15 +1,22 @@
 {
-    "name": "knowthesheets",
-    "version": "0.0.1",
-    "description": "a library that helps create interactive exercises for learning to read sheet music",
-    "main": "index.js",
-    "scripts": {
-        "start": "http-server",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Ian McLaughlin",
-    "license": "MIT",
-    "devDependencies": {
-        "http-server": "^0.9.0"
-    }
+  "name": "knowthesheets",
+  "version": "0.0.1",
+  "description": "a library that helps create interactive exercises for learning to read sheet music",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/webpack-dev-server --content-base build/ --host 0.0.0.0",
+    "serve": "http-server",
+    "build": "./node_modules/.bin/webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian McLaughlin",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.9.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.1"
+  },
+  "dependencies": {
+    "midi": "mudcube/MIDI.js"
+  }
 }
