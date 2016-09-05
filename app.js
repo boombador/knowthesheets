@@ -14,7 +14,14 @@ function init() {
     c.height = HEIGHT;
     ctx = c.getContext("2d");
 
-    staff = new Staff(25, 150, 750, 20, 50);
+    staff = new Staff({
+        x: 25,
+        y: 150,
+        length: 750,
+        lineGap: 20,
+        beatDist: 50,
+        beatDuration: 1000
+    });
 
     staff.addOctaveScale(2);
     staff.addOctaveScale(1);

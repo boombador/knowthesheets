@@ -17,35 +17,6 @@ function line(ctx, x1, y1, x2, y2) {
     ctx.stroke();
 }
 
-// scaled so that duration 1 -> quarter note, 2 -> half note, etc.
-function drawNote(ctx, x, y, duration, noteRadius) {
-    noteRadius = noteRadius || 6;
-    ctx.save();
-
-    ctx.translate(x, y);
-    ctx.scale(1.3, 1);
-
-    ctx.beginPath();
-    ctx.arc(0, 0, noteRadius, 0, Math.PI*2); 
-    ctx.closePath();
-
-    if (duration == 1) {
-        ctx.fill();
-        ctx.moveTo(noteRadius, 0);
-        ctx.lineTo(noteRadius, -TAIL_HEIGHT);
-        ctx.stroke();
-    } else if (duration == 2) {
-        ctx.stroke();
-        ctx.moveTo(noteRadius, 0);
-        ctx.lineTo(noteRadius, -TAIL_HEIGHT);
-        ctx.stroke();
-    } else if (duration == 4) {
-        ctx.stroke();
-    }
-
-    ctx.restore();
-}
-
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
@@ -53,53 +24,35 @@ function getRandomInt(min, max) {
 // x coordinate of leftmost end of staff
 // y is the vertical position of middle c line
 class Staff {
-    constructor(x, y, length, lineGap, beatDist, beatDuration) {
-        this.x = x;
-        this.y = y;
-        this.length = length;
-        this.lineGap = lineGap;
-        this.stepHeight = lineGap / 2;
-        this.beatDist = beatDist;
+    constructor(opts) {
+        opts = opts || {};
+        this.x = opts.x;
+        this.y = opts.y;
+        this.length = opts.length;
+        this.lineGap = opts.lineGap;
+        this.stepHeight = opts.lineGap / 2;
+        this.beatDist = opts.beatDist;
+        this.beatDuration = opts.beatDuration || 1000;
 
-        this.currentX = x;
+        this.currentX = opts.x;
         this.notes = [];
         this.activeNote = 0;
         this.lineStart = Date.now();
-        this.beatDuration = beatDuration || 1000;
     }
 
-    render(ctx) {
-        var staffX = this.x;
-        var staffY = this.y;
-
-        // treble staff
-        var y = staffY - this.lineGap;
-        for (var i = 0; i < 5; i++) {
-            line(ctx, staffX, y, staffX + this.length, y);
-            y -= this.lineGap;
-        }
-        var verticalOffset = (staffY - this.lineGap) - y;
-
-        // bass staff
-        y = staffY + this.lineGap;
-        for (i = 0; i < 5; i++) {
-            line(ctx, staffX, y, staffX + this.length, y);
-            y += this.lineGap;
-        }
-
-        // desired param: period of quarter beat
-        // elapsed time = number of quarter beats * beat duration
-
-        // scale milliseconds since line restarted to get offset
+    drawSweepLine(ctx) {
+        var verticalOffset = 5 * this.lineGap;
         var timeElapsed = Date.now() - this.lineStart;
         var beatsPassed = timeElapsed / this.beatDuration;
-        var dx = staffX + (timeElapsed * this.beatDist / this.beatDuration);
+        var dx = this.x + (timeElapsed * this.beatDist / this.beatDuration);
+
         ctx.save();
         ctx.strokeStyle = 'rgb(255, 0, 0)';
-        line(ctx, dx, staffY - verticalOffset, dx, staffY + verticalOffset);
+        line(ctx, dx, this.y - verticalOffset, dx, this.y + verticalOffset);
         ctx.restore();
+    }
 
-        // draw notes
+    drawNotes(ctx) {
         var noteRadius = this.stepHeight;
         var activeIndex = this.activeNote;
         this.notes.map(function(note, i) {
@@ -109,13 +62,61 @@ class Staff {
                 ctx.strokeStyle = "rgb(255,165,0)";
             }
 
-            drawNote(ctx,  note.x, note.y, note.duration, noteRadius );
+            this.drawNote(ctx,  note.x, note.y, note.duration, noteRadius );
 
             if (activeIndex == i) {
                 ctx.restore();
             }
-        });
+        }.bind(this));
+    }
 
+    // scaled so that duration 1 -> quarter note, 2 -> half note, etc.
+    drawNote(ctx, x, y, duration, noteRadius) {
+        noteRadius = noteRadius || 6;
+        ctx.save();
+
+        ctx.translate(x, y);
+        ctx.scale(1.3, 1);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, noteRadius, 0, Math.PI*2); 
+        ctx.closePath();
+
+        if (duration == 1) {
+            ctx.fill();
+            ctx.moveTo(noteRadius, 0);
+            ctx.lineTo(noteRadius, -TAIL_HEIGHT);
+            ctx.stroke();
+        } else if (duration == 2) {
+            ctx.stroke();
+            ctx.moveTo(noteRadius, 0);
+            ctx.lineTo(noteRadius, -TAIL_HEIGHT);
+            ctx.stroke();
+        } else if (duration == 4) {
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
+
+
+    render(ctx) {
+        // treble staff
+        var y = this.y - this.lineGap;
+        for (var i = 0; i < 5; i++) {
+            line(ctx, this.x, y, this.x + this.length, y);
+            y -= this.lineGap;
+        }
+
+        // bass staff
+        y = this.y + this.lineGap;
+        for (i = 0; i < 5; i++) {
+            line(ctx, this.x, y, this.x + this.length, y);
+            y += this.lineGap;
+        }
+
+        this.drawSweepLine(ctx);
+        this.drawNotes(ctx);
     }
 
     // numerical indices, octave 0 note 0 is middle c, note 0 is always c, note 1 is d and so on
