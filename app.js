@@ -19,7 +19,7 @@ function init() {
         length: 750,
         lineGap: 20,
         beatDist: 50,
-        beatDuration: 2000
+        bpm: 180
     });
 
     melody.addOctaveScale(2);
@@ -52,7 +52,8 @@ function loop() {
     requestAnimationFrame(loop);
 
     ctx.clearRect( 0, 0, WIDTH, HEIGHT );
-    melody.draw(ctx);
+    melody.update();
+    melody.render(ctx);
 }
 
 init();

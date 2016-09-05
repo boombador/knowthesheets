@@ -7,6 +7,13 @@ function line(ctx, x1, y1, x2, y2) {
     ctx.stroke();
 }
 
+var statusColors = {
+    "correct": "rgb(0, 255, 0)",
+    "missed": "rgb(255, 0, 0)",
+    "unvisited": "rgb(0, 0, 0)",
+    "active": "rgb(255,165,0)"
+};
+
 // x coordinate of leftmost end of staff
 // y is the vertical position of middle c line
 class Staff {
@@ -42,10 +49,8 @@ class Staff {
         var noteY = bottom - offsetHeight;
 
         ctx.save();
-        if (color) {
-            ctx.fillStyle = color;
-            ctx.strokeStyle = color;
-        }
+        ctx.fillStyle = statusColors[note.status];
+        ctx.strokeStyle = statusColors[note.status];
 
         ctx.translate(noteX, noteY);
         ctx.scale(1.3, 1);

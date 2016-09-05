@@ -17,17 +17,22 @@ function getRandomInt(min, max) {
 
 // our basic melody is a collection of notes which may potentially be rendered across multiple staves
 class Melody {
+
+    // store current beat, function of elapsed time and beatDuration
+
+    // bpm - tempo
+    // count - beats per measure
+    // note - single beat note value
     constructor(opts) {
         opts = opts || {};
 
         this.notes = [];
-        this.activeNote = 0;
         this.playStart = Date.now();
-        this.currentBeat = opts.initialBeatOffset || 0;
 
-        this.beatDuration = opts.beatDuration || 1000; // quarter note, not traditional numbering
-        this.signatureCount = opts.beatsPerMeasure || 4;
+        this.activeNoteIndex = 0;
+        this.currentBeat = 0;
 
+        this.beatDuration = (60000 / opts.bpm) || 1000; // convert bpm to milliseconds per beat
         this.staff = new Staff({
             x: 25,
             y: 150,
@@ -37,21 +42,59 @@ class Melody {
         });
     }
 
-    draw(ctx) {
-        var timeElapsed = Date.now() - this.playStart;
-        var beatsPassed = timeElapsed / this.beatDuration;
+    update() {
+        if (this.finished) {
+            return;
+        }
 
-        this.staff.drawLines(ctx);
-        this.drawNotes(ctx);
-        this.staff.drawSweepLine(ctx, beatsPassed);
+        var activeNote = this.notes[this.activeNoteIndex];
+        var timeElapsed = Date.now() - this.playStart;
+        this.currentBeat = timeElapsed / this.beatDuration;
+
+        switch (activeNote.status) {
+        case "correct":
+            // this should happen asynchronously
+            this.activeNoteIndex++;
+            break;
+
+        case "unvisited":
+            // the active note has just been advanced, could be before or after current beat position
+            var delta = Math.abs(this.currentBeat - activeNote.startBeat);
+            if (delta < 0.5) {
+                activeNote.status = "active"
+            }
+            break;
+
+        case "active":
+            // waiting for user input, if currentBeat goes too far the note start the note should be marked missed
+            var delta = this.currentBeat - activeNote.startBeat;
+            if (delta > 0.5) {
+                activeNote.status = "missed"
+                this.activeNoteIndex++;
+            }
+            break;
+
+        case "missed":
+            console.warn("Missed note should never be active");
+            break;
+
+        default:
+            console.warn("implement note status");
+        }
+
+        if (this.activeNoteIndex >= this.notes.length) {
+            this.finished = true;
+        }
     }
 
-    drawNotes(ctx) {
-        var activeIndex = this.activeNote;
+    render(ctx) {
+        this.staff.drawLines(ctx);
+
         this.notes.map(function(note, i) {
-            var color = activeIndex == i ? "rgb(255,165,0)" : undefined;
-            this.staff.drawNote(ctx, note, color );
+            this.staff.drawNote( ctx, note );
         }.bind(this));
+
+        this.staff.drawSweepLine(ctx, this.currentBeat);
     }
 
     // numerical indices, octave 0 note 0 is middle c, note 0 is always c, note 1 is d and so on
@@ -62,6 +105,7 @@ class Melody {
             duration: durationInBeats,
             octave: octave,
             value: note,
+            status: 'unvisited',
             letter: noteDefs[noteOffset]
         });
 
@@ -88,10 +132,14 @@ class Melody {
     }
 
     processNote(pressedKey) {
-        var note = this.notes[this.activeNote];
+        if (this.finished) {
+            return;
+        }
+        var note = this.notes[this.activeNoteIndex];
 
         if (note.letter == pressedKey) {
-            this.activeNote++;
+            note.status = "correct";
+            this.activeNoteIndex++;
             
             // TODO: play note
         } else {
@@ -100,9 +148,10 @@ class Melody {
     }
 
     restart() {
-        this.activeNote = 0;
+        this.activeNoteIndex = 0;
         this.notes = [];
         this.currentBeat = 0;
+        this.playStart = Date.now();
     }
 }
 
