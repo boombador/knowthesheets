@@ -44,48 +44,45 @@ class Melody {
     }
 
     update() {
-        if (this.finished) {
-            return;
-        }
-
-        var activeNote = this.notes[this.activeNoteIndex];
         var timeElapsed = Date.now() - this.playStart;
         this.currentBeat = timeElapsed / this.beatDuration;
 
-        switch (activeNote.status) {
-        case "correct":
-            // this should happen asynchronously
-            this.activeNoteIndex++;
-            break;
-
-        case "unvisited":
-            // the active note has just been advanced, could be before or after current beat position
-            var delta = Math.abs(this.currentBeat - activeNote.startBeat);
-            if (delta < 0.5) {
-                activeNote.status = "active"
-            }
-            break;
-
-        case "active":
-            // waiting for user input, if currentBeat goes too far the note start the note should be marked missed
-            var delta = this.currentBeat - activeNote.startBeat;
-            if (delta > 0.5) {
-                activeNote.status = "missed"
-                this.activeNoteIndex++;
-            }
-            break;
-
-        case "missed":
-            console.warn("Missed note should never be active");
-            break;
-
-        default:
-            console.warn("implement note status");
-        }
-
+        var activeNote = this.notes[this.activeNoteIndex];
         if (this.activeNoteIndex >= this.notes.length) {
-            this.finished = true;
+            return;
         }
+
+        switch (activeNote.status) {
+            case "correct":
+                // this should happen asynchronously
+                this.activeNoteIndex++;
+                break;
+
+            case "unvisited":
+                // the active note has just been advanced, could be before or after current beat position
+                var delta = Math.abs(this.currentBeat - activeNote.startBeat);
+                if (delta < 0.5) {
+                    activeNote.status = "active"
+                }
+                break;
+
+            case "active":
+                // waiting for user input, if currentBeat goes too far the note start the note should be marked missed
+                var delta = this.currentBeat - activeNote.startBeat;
+                if (delta > 0.5) {
+                    activeNote.status = "missed"
+                    this.activeNoteIndex++;
+                }
+                break;
+
+            case "missed":
+                console.warn("Missed note should never be active");
+                break;
+
+            default:
+                console.warn("implement note status");
+        }
+
     }
 
     render(ctx) {
@@ -133,9 +130,10 @@ class Melody {
     }
 
     processNote(pressedKey) {
-        if (this.finished) {
+        if (this.activeNoteIndex >= this.notes.length) {
             return;
         }
+
         var note = this.notes[this.activeNoteIndex];
 
         if (note.letter == pressedKey) {
