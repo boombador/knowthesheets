@@ -19,11 +19,11 @@ function init() {
         length: 750,
         lineGap: 20,
         beatDist: 50,
-        bpm: 180
+        bpm: 60
     });
 
     melody.addOctaveScale(2);
-    melody.addOctaveScale(1);
+    //melody.addOctaveScale(1);
 
     document.body.onkeydown = handleKeypress;
 

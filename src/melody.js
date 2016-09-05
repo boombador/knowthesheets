@@ -18,8 +18,6 @@ function getRandomInt(min, max) {
 // our basic melody is a collection of notes which may potentially be rendered across multiple staves
 class Melody {
 
-    // store current beat, function of elapsed time and beatDuration
-
     // bpm - tempo
     // count - beats per measure
     // note - single beat note value
@@ -30,15 +28,18 @@ class Melody {
         this.playStart = Date.now();
 
         this.activeNoteIndex = 0;
-        this.currentBeat = 0;
+        this.currentBeat = 0; // function of elapsed time and beatDuration
 
         this.beatDuration = (60000 / opts.bpm) || 1000; // convert bpm to milliseconds per beat
+
         this.staff = new Staff({
             x: 25,
             y: 150,
             length: 750,
             lineGap: 20,
-            beatDist: 50
+            beatDist: 50,
+            signatureCount: 4,
+            signatureNoteValue: 4
         });
     }
 
@@ -88,7 +89,7 @@ class Melody {
     }
 
     render(ctx) {
-        this.staff.drawLines(ctx);
+        this.staff.drawMeasures(ctx);
 
         this.notes.map(function(note, i) {
             this.staff.drawNote( ctx, note );
