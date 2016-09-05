@@ -1,10 +1,9 @@
 
-
-var Staff = require('./src/staff');
+var Melody = require('./src/melody');
 
 var c;
 var ctx;
-var staff;
+var melody;
 
 var WIDTH = 800, HEIGHT = 300;
 
@@ -14,17 +13,17 @@ function init() {
     c.height = HEIGHT;
     ctx = c.getContext("2d");
 
-    staff = new Staff({
+    melody = new Melody({
         x: 25,
         y: 150,
         length: 750,
         lineGap: 20,
         beatDist: 50,
-        beatDuration: 1000
+        beatDuration: 2000
     });
 
-    staff.addOctaveScale(2);
-    staff.addOctaveScale(1);
+    melody.addOctaveScale(2);
+    melody.addOctaveScale(1);
 
     document.body.onkeydown = handleKeypress;
 
@@ -34,8 +33,8 @@ function init() {
 }
 
 function randomExercise() {
-    staff.clear();
-    staff.randomQuarterNotes(16);
+    melody.restart();
+    melody.randomQuarterNotes(16);
 }
 
 function handleKeypress(evt) {
@@ -46,14 +45,14 @@ function handleKeypress(evt) {
     var pressResult = document.getElementById('userPress');
     var pressedKey = String.fromCharCode(evt.which);
     pressResult.innerHTML = pressedKey;
-    staff.processNote(pressedKey);
+    melody.processNote(pressedKey);
 }
 
 function loop() {
     requestAnimationFrame(loop);
 
     ctx.clearRect( 0, 0, WIDTH, HEIGHT );
-    staff.render(ctx);
+    melody.draw(ctx);
 }
 
 init();
